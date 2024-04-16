@@ -1,1 +1,1 @@
-# int-manager
+# email-manager
