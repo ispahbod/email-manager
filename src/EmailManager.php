@@ -9,19 +9,22 @@ class EmailManager
     public static function isEmailValid($email): bool
     {
         $email = self::cleanEmail($email);
-        return filter_var($email, FILTER_VALIDATE_EMAIL) && self::isDomainValid($email);
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return false;
+        }
+        return self::isDomainValid($email);
     }
 
     private static function isDomainValid($email): bool
     {
-        $domain = self::extractDomainFromEmail($email);
+        $domain = self::extractDomainFromEmail($email, false);
         return in_array($domain, self::VALID_EMAIL_DOMAINS);
     }
 
-    public static function extractDomainFromEmail($email): string|false
+    public static function extractDomainFromEmail($email, $validate = true): string|false
     {
         $email = self::cleanEmail($email);
-        if (self::isEmailValid($email)) {
+        if (!$validate || self::isEmailValidWithoutDomainCheck($email)) {
             return substr(strrchr($email, "@"), 1);
         }
         return false;
@@ -30,7 +33,7 @@ class EmailManager
     public static function formatLocalPartOfEmail($email): string|false
     {
         $email = self::cleanEmail($email);
-        if (self::isEmailValid($email)) {
+        if (self::isEmailValidWithoutDomainCheck($email)) {
             $localPart = strstr($email, '@', true);
             return strtolower($localPart);
         }
@@ -40,9 +43,9 @@ class EmailManager
     public static function formatCompleteEmail($email): string|false
     {
         $email = self::cleanEmail($email);
-        if (self::isEmailValid($email)) {
+        if (self::isEmailValidWithoutDomainCheck($email)) {
             $localPart = self::formatLocalPartOfEmail($email);
-            $domain = self::extractDomainFromEmail($email);
+            $domain = self::extractDomainFromEmail($email, false);
             return $localPart . '@' . $domain;
         }
         return false;
@@ -58,5 +61,10 @@ class EmailManager
     public static function listValidDomains(): array
     {
         return self::VALID_EMAIL_DOMAINS;
+    }
+
+    public static function isEmailValidWithoutDomainCheck($email): bool
+    {
+        return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
     }
 }
