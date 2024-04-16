@@ -48,7 +48,7 @@ class EmailManager
         return false;
     }
 
-    private static function cleanEmail($email): string
+    public static function cleanEmail($email): string
     {
         $emailParts = explode('@', $email);
         $emailParts[0] = str_replace('.', '', $emailParts[0]);
