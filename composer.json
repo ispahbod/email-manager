@@ -17,6 +17,7 @@
     "homepage": "https://github.com/ispahbod/email-manager",
     "require": {
         "php": "^8.2",
+        "ispahbod/string-manager": "^1.0.0",
         "illuminate/support": ">=6"
     },
     "require-dev": {
